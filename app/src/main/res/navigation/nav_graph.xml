@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="ir.matiran.kotlin_sample.ListFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_mainFragment_to_fragment_second"
+            app:destination="@id/detailFragment" />
+        <argument
+            android:name="CurrencyName"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="None" />
+        <argument
+            android:name="CurrencyInfo"
+            app:argType="ir.matiran.kotlin_sample.ProfileListInfo" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="ir.matiran.kotlin_sample.DetailFragment"
+        android:label="fragment_second"
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_fragment_second_to_mainFragment"
+            app:destination="@id/listFragment" />
+
+    </fragment>
+</navigation>
