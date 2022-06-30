@@ -4,7 +4,10 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-class Profile: Serializable {
+data class Profile(val size: String,val price: String, val side: String, val timestamp: String) {
+
+    // for using below: remove data, and parameters and add : Serializable end of class
+/*
     @Expose
     @SerializedName("size")
     var size: String? = null
@@ -20,6 +23,6 @@ class Profile: Serializable {
     @Expose
     @SerializedName("timestamp")
     var timestamp: String? = null
-
+*/
 
 }

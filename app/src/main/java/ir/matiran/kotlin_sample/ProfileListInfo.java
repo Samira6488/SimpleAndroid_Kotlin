@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ProfileListInfo implements Serializable {
 
+public class ProfileListInfo implements Serializable {
     @Expose
     @SerializedName("xrp-usdt")
     public ArrayList<Profile> xrp_usdt;

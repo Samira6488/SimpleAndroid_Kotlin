@@ -32,7 +32,7 @@ class TransactionListAdapter(
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val detCurrent = DetailList!![position]
-            holder.bindView(detCurrent)
+        holder.bindView(detCurrent)
     }
 
     override fun getItemCount(): Int {

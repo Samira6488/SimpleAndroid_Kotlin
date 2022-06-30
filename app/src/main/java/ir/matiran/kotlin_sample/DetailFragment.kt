@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import ir.matiran.kotlin_sample.databinding.FragmentDetailBinding
 import java.io.Serializable
@@ -19,8 +19,8 @@ class DetailFragment : Fragment() {
     var binding: FragmentDetailBinding? = null
     var detAdapter: TransactionListAdapter? = null
     private var nameCurrency: String? = null
-    private var InfoCurrency: Serializable? = null
     lateinit var navController: NavController
+    var model: MoneyViewModel? = null
 
 
     fun DetailFragment() {
@@ -42,19 +42,29 @@ class DetailFragment : Fragment() {
         if (arguments != null) {
             nameCurrency = arguments?.getString("CurrencyName")
             binding?.detcurrencyTv?.setText(nameCurrency)
-            InfoCurrency = arguments?.getSerializable("CurrencyInfo")
         }
 
         // Give the RecyclerView a default layout manager.
         binding?.detailrecviewRv?.setLayoutManager(LinearLayoutManager(activity))
-        var OneIfo: ArrayList<Profile>?
+        model = ViewModelProvider(activity!!)[MoneyViewModel::class.java]
+
+
+            var OneIfo = ArrayList<Profile>()
         try {
-            OneIfo = getMoneyTransactions(nameCurrency)
-            // Create an adapter and supply the data to be displayed.
-            detAdapter = TransactionListAdapter(requireContext() as MainActivity, OneIfo)
-            // Connect the adapter with the RecyclerView.
-            binding?.detailrecviewRv?.setAdapter(detAdapter)
-            detAdapter?.notifyDataSetChanged()
+            model!!.getProfiles()!!.observe(this, { currencyprofiles ->
+                if (currencyprofiles == null)
+                    return@observe
+
+                OneIfo = model!!.getProfiles()!!.value!!
+                // Create an adapter and supply the data to be displayed.
+                detAdapter = TransactionListAdapter(requireContext() as MainActivity, OneIfo)
+                // Connect the adapter with the RecyclerView.
+                binding!!.detailrecviewRv.adapter = detAdapter
+                detAdapter!!.notifyDataSetChanged()
+            })
+            model!!.fetchProfiles(nameCurrency!!)
+
+
         } catch (e: IllegalAccessException) {
             e.printStackTrace()
         }
@@ -64,21 +74,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(v: View, savedInstanceState: Bundle?) {
         super.onViewCreated(v, savedInstanceState)
         navController = Navigation.findNavController(v)
-    }
-
-    @Throws(IllegalAccessException::class)
-    fun getMoneyTransactions(coinName: String?): ArrayList<Profile>? {
-
-        val fields = ProfileListInfo::class.java.fields
-
-        for (i in 0 until fields.size) {
-            Log.wtf("Extract", "Field Value: " + fields[i].name)
-            if (fields[i].name.equals(coinName)) {
-                return fields[i][InfoCurrency] as ArrayList<Profile>
-            }
-        }
-        return null
-
     }
 
     companion object {
