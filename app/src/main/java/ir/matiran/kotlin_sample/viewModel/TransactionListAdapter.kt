@@ -1,12 +1,13 @@
-package ir.matiran.kotlin_sample
+package ir.matiran.kotlin_sample.viewModel
 
-import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ir.matiran.kotlin_sample.databinding.RecyclerviewRowBinding
+import ir.matiran.kotlin_sample.model.Profile
+import ir.matiran.kotlin_sample.view.MainActivity
 import java.util.ArrayList
 
 

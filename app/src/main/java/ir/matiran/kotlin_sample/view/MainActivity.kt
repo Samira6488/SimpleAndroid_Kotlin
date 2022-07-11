@@ -1,10 +1,11 @@
-package ir.matiran.kotlin_sample
+package ir.matiran.kotlin_sample.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
+import dagger.hilt.android.AndroidEntryPoint
+import ir.matiran.kotlin_sample.R
 
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

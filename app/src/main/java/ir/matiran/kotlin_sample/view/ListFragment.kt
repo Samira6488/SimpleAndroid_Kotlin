@@ -1,28 +1,33 @@
-package ir.matiran.kotlin_sample
+package ir.matiran.kotlin_sample.view
 
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
 import ir.matiran.kotlin_sample.databinding.FragmentListBinding
 import java.util.*
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
+import ir.matiran.kotlin_sample.viewModel.MoneyViewModel
+import ir.matiran.kotlin_sample.R
+import ir.matiran.kotlin_sample.model.ProfileListInfo
+import ir.matiran.kotlin_sample.viewModel.CurrencyListAdapter
 
-
+@AndroidEntryPoint
 class ListFragment : Fragment(), CurrencyListAdapter.ItemClickListener {
+
     var binding: FragmentListBinding? = null
-    //private var CurrencyList = LinkedList<String>()
-   // private var moneyprofilelistinfo = ProfileListInfo()
-    private var mAdapter: CurrencyListAdapter? = null
+    var mAdapter: CurrencyListAdapter? = null
     lateinit var navController: NavController
-    var model: MoneyViewModel? = null
+    var moneyprofilelistinfo = ProfileListInfo()
+    private val model:MoneyViewModel by viewModels()
 
     fun ListFragment() {
-        // Required empty public constructor
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +44,8 @@ class ListFragment : Fragment(), CurrencyListAdapter.ItemClickListener {
             FetchServer()
         })
 
-        model = ViewModelProvider(activity!!)[MoneyViewModel::class.java]
-        FillRecycleView()
-
+       FillRecycleView()
         return binding?.getRoot()
-
     }
 
     override fun onViewCreated(v: View, savedInstanceState: Bundle?) {
@@ -53,38 +55,29 @@ class ListFragment : Fragment(), CurrencyListAdapter.ItemClickListener {
 
     fun FillRecycleView() {
 
-        model!!.getCurrency()!!.observe(this, { currency ->
-            if (currency == null)
-                return@observe
+        var CurrencyList = LinkedList<String>()
+        var money = ProfileListInfo()
 
-            var CurrencyList = LinkedList<String>()
-            CurrencyList = model!!.getCurrency()!!.value!!
+        for (i in 0..32) {
+            CurrencyList?.addLast(money?.GetCoins(i).toString())
+        }
+        mAdapter = CurrencyListAdapter((context as ContextWrapper).baseContext as MainActivity?, CurrencyList, this)
+        binding?.currencyrecviewRv?.setAdapter(mAdapter)
+        binding?.currencyrecviewRv?.setLayoutManager(LinearLayoutManager(activity))
+        mAdapter!!.notifyDataSetChanged()
 
-            mAdapter = CurrencyListAdapter(requireContext() as MainActivity, CurrencyList, this)
-            binding?.currencyrecviewRv?.setAdapter(mAdapter)
-            binding?.currencyrecviewRv?.setLayoutManager(LinearLayoutManager(activity))
-
-        })
-
-        model!!.loadMoney()
         FetchServer()
     }
 
 
     fun FetchServer() {
 
-        model!!.getTransactions()!!.observe(this, { transactions ->
-            if (transactions == null)
-                return@observe
-
-            var moneyprofilelistinfo = ProfileListInfo()
+        model.transactionsList.observe(viewLifecycleOwner) {
             moneyprofilelistinfo = model!!.getTransactions()!!.value!!
-            mAdapter!!.setProfileList(moneyprofilelistinfo)
-            mAdapter!!.notifyDataSetChanged()
-        })
-        model!!.fetchTransactions(requireContext() as MainActivity)
-    }
+        }
+        model.fetchTransactions((context as ContextWrapper).baseContext as MainActivity?)
 
+    }
 
     companion object {
         fun newInstance(): ListFragment {
@@ -95,6 +88,9 @@ class ListFragment : Fragment(), CurrencyListAdapter.ItemClickListener {
     override fun onItemClick(CurrencyList: String?) {
         val bundle = Bundle()
         bundle.putString("CurrencyName", CurrencyList)
+        bundle.putSerializable("CurrencyInfo", moneyprofilelistinfo)
         navController?.navigate(R.id.action_mainFragment_to_fragment_second, bundle)
     }
 }
+
+

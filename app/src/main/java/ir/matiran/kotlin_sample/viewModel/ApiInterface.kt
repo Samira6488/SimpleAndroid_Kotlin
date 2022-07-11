@@ -1,7 +1,8 @@
-package ir.matiran.kotlin_sample
+package ir.matiran.kotlin_sample.viewModel
 
-import ir.matiran.kotlin_sample.ProfileListInfo
+import ir.matiran.kotlin_sample.model.ProfileListInfo
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -9,8 +10,10 @@ import retrofit2.http.GET
 interface ApiInterface {
 
     @GET("https://api.exir.io/v1/trades/")
-    fun getCurrencyApi(): Call<ProfileListInfo?>?
+    suspend fun getCurrencyApi(): Response<ProfileListInfo?>?
 
+    /*
+    fun getCurrencyApi(): Call<ProfileListInfo?>?
     companion object {
 
         var BASE_URL = "https://api.exir.io/v1/trades/"
@@ -25,5 +28,6 @@ interface ApiInterface {
 
         }
     }
+     */
 
 }

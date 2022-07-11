@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/listFragment"
-        android:name="ir.matiran.kotlin_sample.ListFragment"
+        android:name="ir.matiran.kotlin_sample.view.ListFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_list" >
         <action
@@ -18,17 +18,22 @@
             app:argType="string"
             app:nullable="true"
             android:defaultValue="None" />
+        <argument
+            android:name="CurrencyInfo"
+            app:argType="ir.matiran.kotlin_sample.model.ProfileListInfo" />
+
 
     </fragment>
 
     <fragment
         android:id="@+id/detailFragment"
-        android:name="ir.matiran.kotlin_sample.DetailFragment"
+        android:name="ir.matiran.kotlin_sample.view.DetailFragment"
         android:label="fragment_second"
         tools:layout="@layout/fragment_detail" >
         <action
             android:id="@+id/action_fragment_second_to_mainFragment"
             app:destination="@id/listFragment" />
+
 
     </fragment>
 </navigation>

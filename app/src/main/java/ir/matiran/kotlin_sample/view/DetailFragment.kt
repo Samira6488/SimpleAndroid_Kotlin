@@ -1,30 +1,35 @@
-package ir.matiran.kotlin_sample
+package ir.matiran.kotlin_sample.view
 
+import android.content.ContextWrapper
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import dagger.hilt.android.AndroidEntryPoint
+import ir.matiran.kotlin_sample.R
 import ir.matiran.kotlin_sample.databinding.FragmentDetailBinding
+import ir.matiran.kotlin_sample.model.Profile
+import ir.matiran.kotlin_sample.model.ProfileListInfo
+import ir.matiran.kotlin_sample.viewModel.TransactionListAdapter
 import java.io.Serializable
-import java.util.ArrayList
 
 
-
+@AndroidEntryPoint
 class DetailFragment : Fragment() {
+
     var binding: FragmentDetailBinding? = null
     var detAdapter: TransactionListAdapter? = null
     private var nameCurrency: String? = null
+    private var InfoCurrency: Serializable? = null
     lateinit var navController: NavController
-    var model: MoneyViewModel? = null
 
 
     fun DetailFragment() {
-        // Required empty public constructor
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,35 +40,26 @@ class DetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = FragmentDetailBinding.inflate(inflater, container, false)
         binding?.backBtn?.setOnClickListener(View.OnClickListener {
             navController?.navigate(R.id.action_fragment_second_to_mainFragment)
         })
+
         if (arguments != null) {
             nameCurrency = arguments?.getString("CurrencyName")
             binding?.detcurrencyTv?.setText(nameCurrency)
+            InfoCurrency = arguments?.getSerializable("CurrencyInfo")
         }
 
-        // Give the RecyclerView a default layout manager.
         binding?.detailrecviewRv?.setLayoutManager(LinearLayoutManager(activity))
-        model = ViewModelProvider(activity!!)[MoneyViewModel::class.java]
-
 
             var OneIfo = ArrayList<Profile>()
         try {
-            model!!.getProfiles()!!.observe(this, { currencyprofiles ->
-                if (currencyprofiles == null)
-                    return@observe
-
-                OneIfo = model!!.getProfiles()!!.value!!
-                // Create an adapter and supply the data to be displayed.
-                detAdapter = TransactionListAdapter(requireContext() as MainActivity, OneIfo)
-                // Connect the adapter with the RecyclerView.
-                binding!!.detailrecviewRv.adapter = detAdapter
-                detAdapter!!.notifyDataSetChanged()
-            })
-            model!!.fetchProfiles(nameCurrency!!)
-
+            OneIfo = getMoneyTransactions(nameCurrency)!!
+            detAdapter = TransactionListAdapter((context as ContextWrapper).baseContext as MainActivity?, OneIfo)
+            binding?.detailrecviewRv?.setAdapter(detAdapter)
+            detAdapter?.notifyDataSetChanged()
 
         } catch (e: IllegalAccessException) {
             e.printStackTrace()
@@ -71,10 +67,25 @@ class DetailFragment : Fragment() {
         return binding?.getRoot()
     }
 
+
     override fun onViewCreated(v: View, savedInstanceState: Bundle?) {
         super.onViewCreated(v, savedInstanceState)
         navController = Navigation.findNavController(v)
     }
+
+    @Throws(IllegalAccessException::class)
+    fun getMoneyTransactions(coinName: String?): ArrayList<Profile>? {
+        val fields = ProfileListInfo::class.java.fields
+
+        for (i in 0 until fields.size) {
+            Log.wtf("Extract", "Field Value: " + fields[i].name)
+            if (fields[i].name.equals(coinName)) {
+                return fields[i][InfoCurrency] as ArrayList<Profile>
+            }
+        }
+        return null
+    }
+
 
     companion object {
         fun newInstance(): DetailFragment {
